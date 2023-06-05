@@ -18,7 +18,10 @@ exports.createBook = (req, res, next) => {
 };
 
 exports.getAllBooks = (req, res, next) => {
-  res.status(200).json({ message: "getallbooks" });
+  Book.find()
+    .then((books) => res.status(200).json(books))
+    .catch((error) => res.status(400).json({ error }));
+
 };
 
 exports.getBook = (req, res, next) => {
