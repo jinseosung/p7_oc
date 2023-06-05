@@ -81,5 +81,30 @@ exports.getRating = (req, res, next) => {
 };
 
 exports.updateRating = (req, res, next) => {
-  res.status(200).json({ message: "updaterating" });
+  const updaterating = { userId: req.body.userId, grade: req.body.rating };
+
+  Book.findOne({ _id: req.params.id })
+    .then((book) => {
+      if (
+        book.ratings.find(
+          (rating) => rating.userId.toString() === req.body.userId
+        )
+      ) {
+        return res
+          .status(401)
+          .json({ message: "Vous avez déjà donné une note à ce livre" });
+      }
+      book.ratings.push(updaterating);
+
+      // average
+      const grade = book.ratings.map((rating) => rating.grade);
+      const average = grade.reduce((a, c) => a + c) / grade.length;
+      book.averageRating = average;
+
+      book
+        .save()
+        .then(() => res.status(201).json({ message: "Note enregistré" }))
+        .catch((error) => res.status(400).json({ error }));
+    })
+    .catch((error) => res.status(400).json({ error }));
 };
