@@ -77,7 +77,11 @@ exports.deleteBook = (req, res, next) => {
 };
 
 exports.getRating = (req, res, next) => {
-  res.status(200).json({ message: "getrating" });
+  Book.find()
+    .sort({ averageRating: -1 })
+    .limit(3)
+    .then((books) => res.status(200).json(books))
+    .catch((error) => res.status(500).json({ error }));
 };
 
 exports.updateRating = (req, res, next) => {
