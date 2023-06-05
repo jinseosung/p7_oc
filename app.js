@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const path = require("path");
 const uri =
   "mongodb+srv://p7_oc:p7_OC@monvieuxgrimoire.bhqzffn.mongodb.net/?retryWrites=true&w=majority";
 
@@ -19,5 +20,6 @@ app.use(cors());
 
 app.use("/api/books", booksRoutes);
 app.use("/api/auth", userRoutes);
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 module.exports = app;
