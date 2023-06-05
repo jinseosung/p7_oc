@@ -21,11 +21,12 @@ exports.getAllBooks = (req, res, next) => {
   Book.find()
     .then((books) => res.status(200).json(books))
     .catch((error) => res.status(400).json({ error }));
-
 };
 
 exports.getBook = (req, res, next) => {
-  res.status(200).json({ message: "getbook" });
+  Book.findOne({ _id: req.params.id })
+    .then((book) => res.status(200).json(book))
+    .catch((error) => res.status(400).json({ error }));
 };
 
 exports.updateBook = (req, res, next) => {
