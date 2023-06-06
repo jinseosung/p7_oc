@@ -4,6 +4,18 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
 exports.signup = (req, res, next) => {
+  const regex = new RegExp(
+    "([!#-'*+/-9=?A-Z^-~-]+(.[!#-'*+/-9=?A-Z^-~-]+)*|\"([]!#-[^-~ \t]|(\\[\t -~]))+\")@([!#-'*+/-9=?A-Z^-~-]+(.[!#-'*+/-9=?A-Z^-~-]+)*|[[\t -Z^-~]*])"
+  );
+
+  if (!req.body.email || !req.body.password) {
+    res.status(400).json({ message: "Paire login/mot de passe vide" });
+    return;
+  } else if (!regex.test(req.body.email)) {
+    res.status(400).json({ message: "L'adresse email invalide" });
+    return;
+  }
+
   bcrypt
     .hash(req.body.password, 10)
     .then((hash) => {
