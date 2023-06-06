@@ -1,4 +1,5 @@
 const Book = require("../models/book");
+const fs = require("fs");
 
 exports.createBook = (req, res, next) => {
   const bookObject = JSON.parse(req.body.book);
@@ -39,7 +40,7 @@ exports.updateBook = (req, res, next) => {
       }
     : { ...req.body };
 
-  delete bookObject._userId;
+  delete bookObject.userId;
 
   Book.findOne({ _id: req.params.id })
     .then((book) => {
@@ -47,14 +48,18 @@ exports.updateBook = (req, res, next) => {
         res.status(401).json({ message: "Non autorisé" });
         return;
       }
-      Book.updateOne(
-        { _id: req.params.id },
-        { ...bookObject, _id: req.params.id }
-      )
-        .then(() => {
-          res.status(200).json({ message: "Livre modifié" });
-        })
-        .catch((error) => res.status(401).json({ error }));
+
+      const filename = book.imageUrl.split("/images/")[1];
+      fs.unlink(`images/${filename}`, () => {
+        Book.updateOne(
+          { _id: req.params.id },
+          { ...bookObject, _id: req.params.id }
+        )
+          .then(() => {
+            res.status(200).json({ message: "Livre modifié" });
+          })
+          .catch((error) => res.status(401).json({ error }));
+      });
     })
     .catch((error) => res.status(400).json({ error }));
 };
