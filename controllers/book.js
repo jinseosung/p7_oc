@@ -112,7 +112,7 @@ exports.updateRating = (req, res, next) => {
 
       book
         .save()
-        .then(() => res.status(201).json({ message: "Note enregistré" }))
+        .then(() => res.status(201).json(book))
         .catch((error) => res.status(400).json({ error }));
     })
     .catch((error) => res.status(400).json({ error }));
