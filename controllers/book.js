@@ -31,17 +31,6 @@ exports.getBook = (req, res, next) => {
 };
 
 exports.updateBook = (req, res, next) => {
-  const bookObject = req.file
-    ? {
-        ...JSON.parse(req.body.book),
-        imageUrl: `${req.protocol}://${req.get("host")}/images/${
-          req.file.filename
-        }`,
-      }
-    : { ...req.body };
-
-  delete bookObject.userId;
-
   Book.findOne({ _id: req.params.id })
     .then((book) => {
       if (book.userId != req.auth.userId) {
@@ -49,8 +38,32 @@ exports.updateBook = (req, res, next) => {
         return;
       }
 
-      const filename = book.imageUrl.split("/images/")[1];
-      fs.unlink(`images/${filename}`, () => {
+      if (req.file) {
+        const bookObject = {
+          ...JSON.parse(req.body.book),
+          imageUrl: `${req.protocol}://${req.get("host")}/images/${
+            req.file.filename
+          }`,
+        };
+
+        delete bookObject.userId;
+
+        const filename = book.imageUrl.split("/images/")[1];
+        fs.unlink(`images/${filename}`, () => {
+          Book.updateOne(
+            { _id: req.params.id },
+            { ...bookObject, _id: req.params.id }
+          )
+            .then(() => {
+              res.status(200).json({ message: "Livre modifié" });
+            })
+            .catch((error) => res.status(401).json({ error }));
+        });
+      } else {
+        const bookObject = { ...req.body };
+
+        delete bookObject.userId;
+
         Book.updateOne(
           { _id: req.params.id },
           { ...bookObject, _id: req.params.id }
@@ -58,10 +71,10 @@ exports.updateBook = (req, res, next) => {
           .then(() => {
             res.status(200).json({ message: "Livre modifié" });
           })
-          .catch((error) => res.status(401).json({ error }));
-      });
+          .catch((error) => res.status(400).json({ error }));
+      }
     })
-    .catch((error) => res.status(400).json({ error }));
+    .catch((error) => res.status(401).json({ error }));
 };
 
 exports.deleteBook = (req, res, next) => {
