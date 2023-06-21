@@ -1,7 +1,22 @@
 const multer = require("multer");
-const path = require("path");
+// const path = require("path");
 
-const storage = multer.diskStorage({
+const storage = multer.memoryStorage();
+
+const filter = (req, file, cb) => {
+  if (file.mimetype.split("/")[0] === "image") {
+    cb(null, true);
+  } else {
+    cb(new Error(`Ce fichier n'est pas une image`));
+  }
+};
+
+module.exports = multer({
+  storage,
+  fileFilter: filter,
+}).single("image");
+
+/* const storage = multer.diskStorage({
   destination: (req, file, callback) => {
     callback(null, "images");
   },
@@ -14,6 +29,6 @@ const storage = multer.diskStorage({
     const ext = path.extname(file.originalname);
     callback(null, name + Date.now() + ext);
   },
-});
+}); */
 
-module.exports = multer({ storage }).single("image");
+// module.exports = multer({ storage }).single("image");
