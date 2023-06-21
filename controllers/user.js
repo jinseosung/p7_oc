@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
 exports.signup = (req, res, next) => {
-  const regex = new RegExp("[a-z0-9]+@[a-z]+.[a-z]");
+  const regex = new RegExp("[a-z0-9]+@[a-z]+\\.[a-z]+");
 
   if (!req.body.email || !req.body.password) {
     res.status(400).json({ message: "Paire login/mot de passe vide" });
