@@ -121,7 +121,7 @@ exports.updateRating = (req, res, next) => {
       // average
       const grade = book.ratings.map((rating) => rating.grade);
       const average = grade.reduce((a, c) => a + c) / grade.length;
-      book.averageRating = average;
+      book.averageRating = Math.ceil(average);
 
       book
         .save()
