@@ -2,8 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
-const uri =
-  "mongodb+srv://p7_oc:p7_OC@monvieuxgrimoire.bhqzffn.mongodb.net/?retryWrites=true&w=majority";
+const uri = process.env.DB_URL;
 
 const booksRoutes = require("./routes/book");
 const userRoutes = require("./routes/user");
